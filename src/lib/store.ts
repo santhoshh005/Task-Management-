@@ -13,7 +13,12 @@ import type {
   UserRecord,
 } from "@/lib/types";
 
-const dataDir = path.join(process.cwd(), ".data");
+// Use a writable directory in serverless environments (Vercel uses a read-only
+// project filesystem). Prefer `process.env.DATA_DIR` if provided, otherwise
+// use `/tmp/.data` on Vercel and the project `.data` directory in other cases.
+const DEFAULT_DATA_DIR = path.join(process.cwd(), ".data");
+const TMP_DATA_DIR = path.join("/tmp", ".data");
+const dataDir = process.env.DATA_DIR || (process.env.VERCEL === "1" ? TMP_DATA_DIR : DEFAULT_DATA_DIR);
 const usersFile = path.join(dataDir, "users.json");
 const sessionsFile = path.join(dataDir, "sessions.json");
 const tasksFile = path.join(dataDir, "tasks.json");
